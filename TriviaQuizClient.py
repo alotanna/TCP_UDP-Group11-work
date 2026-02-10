@@ -10,9 +10,12 @@ def send_request(request_data):
     clientSocket = socket(AF_INET, SOCK_STREAM)
     
     try:
+        # Each request opens a short-lived TCP connection for simplicity
         clientSocket.connect((serverName, serverPort))
+        # Serialize the request as JSON so the server can parse it
         clientSocket.send(json.dumps(request_data).encode())
         
+        # Server sends a JSON response (assumed to fit in 4096 bytes)
         response = clientSocket.recv(4096).decode()
         return json.loads(response)
     
@@ -48,6 +51,7 @@ def get_player_name():
 
 def select_category():
     """Let player select a category"""
+    # Ask the server for the current list of categories
     response = send_request({"action": "get_categories"})
     
     if response is None or response.get("status") != "success":
@@ -69,6 +73,7 @@ def select_category():
             choice_num = int(choice)
             
             if 1 <= choice_num <= len(categories):
+                # Convert numeric choice back to category string
                 return categories[choice_num - 1]
             else:
                 print(f"ERROR: Please enter a number between 1 and {len(categories)}")
@@ -109,6 +114,7 @@ def play_quiz(player_name):
         # Display question
         print("\n" + " " * 60)
         print(f"QUESTION {questions_answered + 1} (Difficulty: {difficulty.upper()})")
+        # Points are based on difficulty (our server would use same scale)
         points_available = {"easy": 10, "medium": 20, "hard": 30}.get(difficulty, 10)
         print(f"Points available: {points_available}")
         print(" " * 60)
@@ -129,8 +135,8 @@ def play_quiz(player_name):
             print("ERROR: Please enter A, B, C, or D")
             continue
         
-        # Submit answer to server for validation
-        # Server needs the original question details to verify
+        # Submit answer for validation (server checks against its question bank)
+        # We send the question text/difficulty so server can match the right item
         submit_response = send_request({
             "action": "submit_answer",
             "player_name": player_name,
@@ -157,6 +163,7 @@ def play_quiz(player_name):
                 print(f"\nINCORRECT. The correct answer was {correct_answer}.")
             
             print(f"Your total score: {total_score} points")
+            # Local session accuracy (server keeps global stats)
             print(f"Session: {correct_count}/{questions_answered} correct ({correct_count/questions_answered*100:.1f}%)")
         else:
             print("\nERROR: Could not validate answer.")
@@ -171,6 +178,7 @@ def play_quiz(player_name):
             print(f"Accuracy: {correct_count/questions_answered*100:.1f}%")
             print(f"Points this session: {total_points}")
             print(" " * 60)
+            # Small checkpoint so players can stop without losing context
             cont = input("\nContinue with more questions? (yes/no): ").strip().lower()
             if cont not in ['yes', 'y']:
                 print("\n" + " " * 60)
@@ -185,6 +193,7 @@ def play_quiz(player_name):
 
 def view_leaderboard():
     """Display the global leaderboard"""
+    # Request top N players from server
     response = send_request({
         "action": "get_leaderboard",
         "top_n": 10
@@ -215,6 +224,7 @@ def view_leaderboard():
 
 def view_statistics(player_name):
     """Display player's personal statistics"""
+    # Ask server for the player's stored stats
     response = send_request({
         "action": "get_stats",
         "player_name": player_name
@@ -262,6 +272,7 @@ def main():
     print("  Easy: 10 points , Medium: 20 points , Hard: 30 points")
     print(" " * 60)
     
+    # Capture name once per session; stats are tracked by this name
     player_name = get_player_name()
     print(f"\nWelcome, {player_name}!")
     
