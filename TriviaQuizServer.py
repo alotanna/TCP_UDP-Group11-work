@@ -362,14 +362,14 @@ serverSocket.bind(('', serverPort))
 serverSocket.listen(10)
 
 print("TRIVIA QUIZ SERVER")
-print(" " * 60)
+print(" ")
 print(f"Server started on port {serverPort}")
 print(f"Categories available: {', '.join(get_categories())}")
 print(f"Total questions: {sum(len(questions) for questions in QUESTION_DATABASE.values())}")
-print(" " * 60)
+print(" ")
 print(f"Server ready at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 print("Waiting for connections...")
-print(" " * 60)
+print(" ")
 
 while True:
     connectionSocket, clientAddress = serverSocket.accept()

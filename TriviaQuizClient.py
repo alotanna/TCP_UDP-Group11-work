@@ -33,13 +33,11 @@ def send_request(request_data):
 
 def display_menu():
     """Display main menu"""
-    print("TRIVIA QUIZ GAME - MAIN MENU")
-    print(" " * 60)
+    print("TRIVIA QUIZ GAME - MAIN MENU\n")
     print("1. Start Quiz")
     print("2. View Leaderboard")
     print("3. View My Statistics")
-    print("4. Quit")
-    print(" " * 60)
+    print("4. Quit\n")
 
 def get_player_name():
     """Get and validate player name"""
@@ -47,7 +45,7 @@ def get_player_name():
         name = input("\nEnter your player name: ").strip()
         if name:
             return name
-        print("ERROR: Name cannot be empty!")
+        print("ERROR: Name cannot be empty")
 
 def select_category():
     """Let player select a category"""
@@ -60,9 +58,8 @@ def select_category():
     
     categories = response.get("categories", [])
     
-    print("\n" + " " * 60)
-    print("SELECT CATEGORY")
-    print(" " * 60)
+    print("\n")
+    print("SELECT CATEGORY\n")
     for i, category in enumerate(categories, 1):
         print(f"{i}. {category}")
     print(" " * 60)
@@ -112,17 +109,17 @@ def play_quiz(player_name):
         difficulty = question_response.get("difficulty")
         
         # Display question
-        print("\n" + " " * 60)
+        print("\n")
         print(f"QUESTION {questions_answered + 1} (Difficulty: {difficulty.upper()})")
         # Points are based on difficulty (our server would use same scale)
         points_available = {"easy": 10, "medium": 20, "hard": 30}.get(difficulty, 10)
         print(f"Points available: {points_available}")
-        print(" " * 60)
+        print(" ")
         print(f"{question}")
         print()
         for option in options:
             print(f"  {option}")
-        print(" " * 60)
+        print(" ")
         
         # Get user answer
         user_answer = input("\nYour answer (A/B/C/D or 'quit'): ").strip().upper()
@@ -170,25 +167,25 @@ def play_quiz(player_name):
         
         # Ask if they want to continue every 5 questions
         if questions_answered % 5 == 0:
-            print("\n" + " " * 60)
+            print("\n")
             print(f"PROGRESS REPORT")
             print(" " * 60)
             print(f"Questions answered: {questions_answered}")
             print(f"Correct answers: {correct_count}")
             print(f"Accuracy: {correct_count/questions_answered*100:.1f}%")
             print(f"Points this session: {total_points}")
-            print(" " * 60)
+            print(" ")
             # Small checkpoint so players can stop without losing context
             cont = input("\nContinue with more questions? (yes/no): ").strip().lower()
             if cont not in ['yes', 'y']:
-                print("\n" + " " * 60)
+                print("\n")
                 print("QUIZ SESSION COMPLETE")
-                print(" " * 60)
+                print(" ")
                 print(f"Final results:")
                 print(f"  Questions: {questions_answered}")
                 print(f"  Correct: {correct_count}")
                 print(f"  Points earned: {total_points}")
-                print(" " * 60)
+                print(" ")
                 break
 
 def view_leaderboard():
@@ -205,9 +202,8 @@ def view_leaderboard():
     
     leaderboard = response.get("leaderboard", [])
     
-    print("\n" + " " * 60)
+    print("\n")
     print("GLOBAL LEADERBOARD - TOP 10 PLAYERS")
-    print(" " * 60)
     print(f"{'Rank':<6} {'Player Name':<30} {'Score':<10}")
     print(" " * 60)
     
@@ -220,7 +216,7 @@ def view_leaderboard():
             score = entry['score']
             print(f"{rank:<6} {player:<30} {score:<10}")
     
-    print(" " * 60)
+    print(" ")
 
 def view_statistics(player_name):
     """Display player's personal statistics"""
@@ -237,18 +233,18 @@ def view_statistics(player_name):
     
     stats = response.get("stats", {})
     
-    print("\n" + " " * 60)
+    print("\n")
     print(f"PLAYER STATISTICS - {stats['player_name']}")
-    print(" " * 60)
+    print(" ")
     print(f"Total Score:        {stats['total_score']}")
     print(f"Questions Answered: {stats['total_questions']}")
     print(f"Correct Answers:    {stats['correct_answers']}")
     print(f"Accuracy:           {stats['accuracy']}%")
-    print("\n" + " " * 60)
+    print("\n")
     print("PERFORMANCE BY CATEGORY")
-    print(" " * 60)
+    print(" ")
     print(f"{'Category':<20} {'Attempted':<12} {'Correct':<12} {'Accuracy':<12}")
-    print(" " * 60)
+    print(" ")
     
     categories = stats.get('categories', {})
     if not categories:
@@ -260,17 +256,17 @@ def view_statistics(player_name):
             accuracy = (correct / attempted * 100) if attempted > 0 else 0
             print(f"{category:<20} {attempted:<12} {correct:<12} {accuracy:<12.1f}%")
     
-    print(" " * 60)
+    print(" ")
 
 def main():
     """this is the main application loop"""
-    print("\n" + " " * 60)
+    print("\n")
     print("WELCOME TO TRIVIA QUIZ GAME")
-    print(" " * 60)
+    print(" ")
     print("Test your knowledge across multiple categories!")
     print("Earn points based on difficulty:")
     print("  Easy: 10 points , Medium: 20 points , Hard: 30 points")
-    print(" " * 60)
+    print(" ")
     
     # Capture name once per session; stats are tracked by this name
     player_name = get_player_name()
@@ -290,9 +286,9 @@ def main():
             view_statistics(player_name)
         
         elif choice == '4':
-            print("\n" + " " * 60)
+            print("\n")
             print("Thank you for playing")
-            print(" " * 60)
+            print("Byeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee!")
             break
         
         else:
