@@ -181,6 +181,7 @@ def get_random_question(category):
     """Get a random question from specified category"""
     if category not in QUESTION_DATABASE:
         return None
+    # Random selection keeps gameplay from repeating the same order
     return random.choice(QUESTION_DATABASE[category])
 
 def check_answer(player_name, category, question_text, user_answer, correct_answer, difficulty):
@@ -197,12 +198,13 @@ def check_answer(player_name, category, question_text, user_answer, correct_answ
                 break
     
     # If we couldn't find the question, use the provided answer (fallback)
+    # This prevents breaking if the client sent a question we don't have.
     if actual_correct_answer is None:
         actual_correct_answer = correct_answer
     
     is_correct = user_answer.upper() == actual_correct_answer.upper()
     
-    # Initialize player if not exists
+    # Initialize player stats on first encounter
     if player_name not in player_scores:
         player_scores[player_name] = 0
         player_stats[player_name] = {
@@ -211,7 +213,7 @@ def check_answer(player_name, category, question_text, user_answer, correct_answ
             "categories": {}
         }
     
-    # Update statistics
+    # Update statistics (overall + per-category)
     player_stats[player_name]["total_questions"] += 1
     
     if category not in player_stats[player_name]["categories"]:
@@ -246,6 +248,7 @@ def check_answer(player_name, category, question_text, user_answer, correct_answ
 
 def get_leaderboard(top_n=10):
     """Get top N players by score"""
+    # Sort descending by score; return only the top N entries
     sorted_players = sorted(player_scores.items(), key=lambda x: x[1], reverse=True)
     return sorted_players[:top_n]
 
@@ -255,6 +258,7 @@ def get_player_stats(player_name):
         return None
     
     stats = player_stats[player_name]
+    # Guard against division by zero if they haven't answered any questions yet
     accuracy = (stats["correct_answers"] / stats["total_questions"] * 100) if stats["total_questions"] > 0 else 0
     
     return {
@@ -270,6 +274,7 @@ def process_request(request_data):
     """Process client request and return appropriate response"""
     try:
         action = request_data.get("action")
+        # Each action maps to a specific server feature (like a mini API)
         
         if action == "get_categories":
             return {
@@ -303,6 +308,7 @@ def process_request(request_data):
             correct_answer = request_data.get("correct_answer")
             difficulty = request_data.get("difficulty")
             
+            # Basic validation to avoid crashes from missing fields
             if not all([player_name, category, user_answer, correct_answer]):
                 return {
                     "status": "error",
