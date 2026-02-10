@@ -205,7 +205,7 @@ def view_leaderboard():
     print("\n")
     print("GLOBAL LEADERBOARD - TOP 10 PLAYERS")
     print(f"{'Rank':<6} {'Player Name':<30} {'Score':<10}")
-    print(" " * 60)
+    print(" ")
     
     if not leaderboard:
         print("No players yet. Be the first to play!")
